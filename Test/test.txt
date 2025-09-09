@@ -1,0 +1,46 @@
+netcdf Transport_test {
+dimensions:
+	time = UNLIMITED ; // (30 currently)
+	level = 6 ;
+	faces = 654 ;
+variables:
+	double time(time) ;
+		time:long_name = "simulation_time" ;
+		time:units = "seconds since 1990-01-01 00:00:00 +10" ;
+		time:grads_step = "seconds" ;
+		time:dt = 86400LL ;
+	int level(level) ;
+		level:long_name = "layer index; 1=near-surface" ;
+	int faces(faces) ;
+		faces:long_name = "face IDs" ;
+	float pt1_x(faces) ;
+		pt1_x:long_name = "x coordinate of point 1 of face" ;
+		pt1_x:units = "degree_east" ;
+	float pt1_y(faces) ;
+		pt1_y:long_name = "y coordinate of point 1 of face" ;
+		pt1_y:units = "degree_north" ;
+	float pt2_x(faces) ;
+		pt2_x:long_name = "x coordinate of point 2 of face" ;
+		pt2_x:units = "degree_east" ;
+	float pt2_y(faces) ;
+		pt2_y:long_name = "y coordinate of point 2 of face" ;
+		pt2_y:units = "degree_north" ;
+	int dest_boxid(faces) ;
+		dest_boxid:long_name = "ID of destination box" ;
+		dest_boxid:units = "IDs" ;
+	int source_boxid(faces) ;
+		source_boxid:long_name = "ID of source box" ;
+		source_boxid:units = "IDs" ;
+	float transport(time, faces, level) ;
+		transport:long_name = "flux across face" ;
+		transport:units = "meter second-1" ;
+		transport:comment = "m/s is to left, viewing from pt1 to pt2" ;
+		transport:FillValue_ = -1.e+20 ;
+
+// global attributes:
+		:Title = "Transport from NEMO salish sea model" ;
+		:Comments = "Transports across faces of box model derived from hydrodynamic model current field. Positive numbers are water gain in dest box, loss in source box." ;
+		:Institution = "CSIRO" ;
+		:Conventions = "Standar" ;
+		:history = "Created Using Javier Porobic (more details : https://github.com/jporobicg) codes on 2025-08-15" ;
+}

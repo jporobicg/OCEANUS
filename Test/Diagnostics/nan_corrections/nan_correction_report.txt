@@ -1,0 +1,113 @@
+NaN Correction Analysis Report
+========================================
+
+Total faces with corrections: 8
+Total NaN corrections: 1440
+Original NaN count: 1800
+Final NaN count: 360
+NaN reduction: 1440
+
+CORRECTED FACES DETAILS
+------------------------------
+
+Face 179 (122→115):
+  Corrections: 180
+  Mean correction: 1.86e+09
+  Max correction: 1.21e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 182 (125→92):
+  Corrections: 180
+  Mean correction: 3.96e+09
+  Max correction: 8.67e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 184 (126→91):
+  Corrections: 180
+  Mean correction: -1.49e+09
+  Max correction: 1.26e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 185 (127→90):
+  Corrections: 180
+  Mean correction: 4.25e+08
+  Max correction: 1.09e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 187 (128→89):
+  Corrections: 180
+  Mean correction: -1.31e+08
+  Max correction: 4.84e+09
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 188 (89→39):
+  Corrections: 180
+  Mean correction: -1.38e+09
+  Max correction: 1.43e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 190 (136→3):
+  Corrections: 180
+  Mean correction: 1.43e+09
+  Max correction: 1.33e+10
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+Face 191 (135→6):
+  Corrections: 180
+  Mean correction: 8.71e+08
+  Max correction: 9.76e+09
+  Time range: 0 to 29
+  Levels: [0, 1, 2, 3, 4, 5]
+
+OVERALL STATISTICS
+--------------------
+Mean correction magnitude: 2.20e+09
+Max correction magnitude: 8.67e+10
+Standard deviation: 6.99e+09
+
+Time distribution:
+  Time 0: 48 corrections
+  Time 1: 48 corrections
+  Time 2: 48 corrections
+  Time 3: 48 corrections
+  Time 4: 48 corrections
+  Time 5: 48 corrections
+  Time 6: 48 corrections
+  Time 7: 48 corrections
+  Time 8: 48 corrections
+  Time 9: 48 corrections
+  Time 10: 48 corrections
+  Time 11: 48 corrections
+  Time 12: 48 corrections
+  Time 13: 48 corrections
+  Time 14: 48 corrections
+  Time 15: 48 corrections
+  Time 16: 48 corrections
+  Time 17: 48 corrections
+  Time 18: 48 corrections
+  Time 19: 48 corrections
+  Time 20: 48 corrections
+  Time 21: 48 corrections
+  Time 22: 48 corrections
+  Time 23: 48 corrections
+  Time 24: 48 corrections
+  Time 25: 48 corrections
+  Time 26: 48 corrections
+  Time 27: 48 corrections
+  Time 28: 48 corrections
+  Time 29: 48 corrections
+
+Level distribution:
+  Level 0: 240 corrections
+  Level 1: 240 corrections
+  Level 2: 240 corrections
+  Level 3: 240 corrections
+  Level 4: 240 corrections
+  Level 5: 240 corrections

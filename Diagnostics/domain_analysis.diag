@@ -1,0 +1,63 @@
+OCEANUS Grid Diagnostic Report
+==================================================
+Generated: 2025-08-19 14:57:03
+
+HYDRODYNAMIC DOMAIN INFORMATION
+-----------------------------------
+Longitude bounds: 140.4373 to 151.9179
+Latitude bounds:  -41.4212 to -36.7773
+Grid dimensions: (265, 489)
+
+BOX COVERAGE ANALYSIS
+-------------------------
+Total boxes: 147
+Inside domain: 140 (95.2%)
+Outside domain: 7 (4.8%)
+
+Boxes outside domain:
+  Box 122
+  Box 125
+  Box 126
+  Box 127
+  Box 128
+  Box 129
+  Box 135
+
+FACE COVERAGE ANALYSIS
+--------------------------
+Total faces: 654
+Inside domain: 636 (97.2%)
+Partially inside: 10
+Outside domain: 8
+
+Faces outside domain:
+  Face 179
+  Face 182
+  Face 183
+  Face 184
+  Face 185
+  Face 187
+  Face 188
+  Face 189
+
+Faces partially inside domain:
+  Face 178
+  Face 180
+  Face 181
+  Face 186
+  Face 191
+  Face 193
+  Face 199
+  Face 224
+  Face 549
+  Face 587
+
+RECOMMENDATIONS
+---------------
+1. Consider removing or adjusting boxes outside the hydrodynamic domain
+2. These boxes may cause issues in transport calculations
+3. Faces outside domain will have zero or invalid transport values
+4. Consider implementing interpolation for these faces
+5. Partially inside faces may need special handling in transport calculations
+
+6. Run mass balance correction after addressing domain coverage issues

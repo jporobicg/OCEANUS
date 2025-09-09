@@ -1,147 +1,37 @@
-# OCEANUS
+# OCEANUS: Ocean Circulation and Transport Analysis Package
 
-**O**ceanographic **C**onverter & **E**xtractor for **A**tla**N**tis **U**sing **S**imulations
+OCEANUS is a comprehensive Python package designed for analyzing ocean circulation patterns and computing transport fluxes between spatial boxes in marine environments. The package provides tools for processing hydrodynamic model outputs, calculating inter-box transport, computing state variables, and applying mass balance corrections to ensure physical consistency.
 
-```
-    ╔════════════════════════════════════════════╗
-    ║               O C E A N U S               ║
-    ║                                            ║
-    ║    Oceanographic Converter & Extractor     ║
-    ║     for Atlantis Using Simulations         ║
-    ╚════════════════════════════════════════════╝
-```
+## Transport Between Boxes Using Layers
 
-A powerful Python tool for transforming oceanographic data into Atlantis ecosystem model inputs. OCEANUS streamlines the preparation of hydrodynamic data, ensuring seamless integration with Atlantis simulations.
+OCEANUS calculates transport between spatial boxes by integrating velocity fields across predefined depth layers and along face boundaries. The package processes hydrodynamic model outputs (u and v velocity components) and interpolates these fields onto face integration points using linear interpolation methods. For each face connecting adjacent boxes, OCEANUS computes the transport flux by integrating the velocity component normal to the face across the face length and through each depth layer.
 
-## Overview
-OCEANUS masters the flow of oceanographic data into Atlantis by:
-- Converting complex hydrodynamic data into Atlantis-compatible formats
-- Processing transport calculations between model boxes
-- Handling variable averaging within boxes
-- Managing vertical layer distributions
-- Generating precise NetCDF outputs
+The transport calculation follows the fundamental relationship:
 
-## Features
-- Transport data processing from NetCDF files
-- Variable data processing and averaging
-- Box model geometry handling
-- NetCDF output generation
+$$T_{i,j,k} = \int_{face} \int_{layer} \vec{v} \cdot \hat{n} \, dA \, dz$$
 
-## Installation
-1. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-```
+where $T_{i,j,k}$ represents the transport through face $i$ at time $j$ and layer $k$, $\vec{v}$ is the velocity vector, $\hat{n}$ is the unit normal vector to the face, and the integration is performed over the face area and layer depth. OCEANUS handles coordinate transformations, accounts for Earth's curvature through latitude corrections, and manages missing data through robust interpolation schemes.
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Variables Per Box and Layer
 
-## Project Structure
-- `src/transport_processor.py`: Main transport processing script
-- `src/variables_processor.py`: Variables processing script
-- `src/functions/`: Helper functions for data processing
+OCEANUS computes and retrieves state variables for each spatial box and depth layer by averaging hydrodynamic model outputs over the box volumes. The package processes three-dimensional fields such as temperature, salinity, and vertical velocity, then spatially averages these variables within each box geometry and vertically averages across each predefined depth layer. This approach provides representative values for each box-layer combination while preserving the vertical structure of the ocean.
 
-## Model Workflow
+The spatial averaging process in OCEANUS follows:
 
-```
-                                    [Input Files]
-                                         │
-                    ┌───────────────────┴───────────────────┐
-                    │                                       │
-            [Transport Processing]               [Variables Processing]
-                    │                                       │
-                    ▼                                       ▼
-        ┌─────────────────────┐               ┌─────────────────────┐
-        │ transport_processor │               │ variables_processor  │
-        └─────────────────────┘               └─────────────────────┘
-                    │                                       │
-            ┌───────┴───────┐                       ┌──────┴──────┐
-            ▼               ▼                       ▼             ▼
-    [Read Geometry]  [Process Transport]    [Read Geometry] [Process Variables]
-         │                   │                    │               │
-         ▼                   ▼                    ▼               ▼
-   ┌──────────┐    ┌────────────────┐    ┌──────────┐    ┌─────────────┐
-   │box_reader│    │   transport    │    │box_reader│    │box_operations│
-   └──────────┘    └────────────────┘    └──────────┘    └─────────────┘
-         │                   │                    │               │
-         └───────┐    ┌─────┘                    └───────┐    ┌─┘
-                 ▼    ▼                                   ▼    ▼
-            [Transport NetCDF]                      [Variables NetCDF]
-                 │                                         │
-                 └─────────────────┐       ┌──────────────┘
-                                   ▼       ▼
-                               [Output Files]
+$$\bar{\phi}_{i,k} = \frac{1}{V_{i,k}} \int_{V_{i,k}} \phi(x,y,z) \, dV$$
 
-```
+where $\bar{\phi}_{i,k}$ is the averaged variable $\phi$ for box $i$ and layer $k$, $V_{i,k}$ is the volume of the box-layer combination, and the integration is performed over the entire box volume. OCEANUS handles complex box geometries, manages partial box coverage within the hydrodynamic domain, and provides comprehensive diagnostics for data quality assessment.
 
-## Function Dependencies
+## Mass Balance Correction
 
-### Transport Processing Chain:
-```
-transport_processor.py
-├── box_reader.py
-│   └── coordinate_utils.py
-├── transport.py
-│   ├── coordinate_utils.py
-│   └── box_reader.py
-└── netcdf_writer.py
+OCEANUS applies a mass balance correction algorithm to ensure that the net transport into and out of each box equals zero, maintaining the fundamental principle of mass conservation. The correction algorithm identifies boxes with non-zero net transport and applies adjustments to faces with missing or zero flux values (NaN or zero transport values). This approach preserves the original transport data while ensuring physical consistency across the entire domain.
 
-```
+The mass balance correction in OCEANUS follows the constraint:
 
-### Variables Processing Chain:
-```
-variables_processor.py
-├── box_reader.py
-│   └── coordinate_utils.py
-├── box_operations.py
-│   └── coordinate_utils.py
-└── netcdf_writer.py
-```
+$$\sum_{j \in \text{faces of box } i} T_{j,k} = 0$$
 
-## Core Functions Description
+for each box $i$ and layer $k$, where $T_{j,k}$ represents the transport through face $j$ in layer $k$. When this constraint is violated, OCEANUS calculates the imbalance $\Delta T_{i,k} = \sum_{j} T_{j,k}$ and applies a correction $C_{j,k} = -\Delta T_{i,k}$ to an appropriate empty face connected to the imbalanced box. The algorithm prioritizes faces with missing data and ensures that corrections are applied in a physically meaningful manner, maintaining the overall transport structure while achieving mass balance.
 
-### Geometry Processing
-- `read_boxes()`: Reads box definitions from BGM file
-- `read_faces()`: Processes face relationships between boxes
-- `check_face_connection()`: Validates face connections between boxes
+---
 
-### Transport Calculations
-- `process_transport()`: Main transport processing function
-- `calculate_transport()`: Computes transport between boxes
-- `calculate_face_transport()`: Handles individual face calculations
-
-### Variable Processing
-- `process_variables()`: Main variable processing function
-- `calculate_box_averages()`: Computes spatial averages
-- `process_box_averages()`: Handles box-level calculations
-
-### Coordinate Operations
-- `lat_correction()`: Applies latitude-dependent corrections
-- `distance_between_points()`: Calculates distances
-- `interpolate_at_latitude()`: Handles latitude interpolation
-
-### Output Generation
-- `write_transport_file()`: Creates transport NetCDF files
-- `write_variable_file()`: Creates variable NetCDF files
-
-## Usage
-The project contains two main processing scripts:
-
-1. Transport Processing:
-```bash
-python src/transport_processor.py
-```
-
-2. Variables Processing:
-```bash
-python src/variables_processor.py
-```
-
-## Data Requirements
-- Input NetCDF files containing transport data
-- BGM (Box Geometry Model) files
-- Mesh configuration file
-- Variable data files 
+*For detailed implementation information and usage examples, please refer to the individual module documentation and example scripts provided with the OCEANUS package.*

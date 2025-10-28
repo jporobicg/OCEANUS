@@ -1,0 +1,38 @@
+\contentsline {section}{Executive Summary}{1}{section*.2}%
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Objectives}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Test Domain}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Methodology}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Data Transformation Workflow}{2}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Data Ingestion}{2}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Spatial Processing}{2}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Mass Balance Correction}{2}{subsubsection.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.1.4}Output Generation}{2}{subsubsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.2}Technical Implementation}{3}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Results}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Spatial Coverage Analysis}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Hydrodynamic Field Visualization}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Transformation Validation}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Processing Statistics}{3}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Mass Balance Correction Analysis}{3}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Correction Performance}{3}{subsubsection.3.5.1}%
+\contentsline {section}{\numberline {4}Technical Validation}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Data Quality Assessment}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Mass Conservation Validation}{8}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Spatial Accuracy}{8}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Diagnostic Analysis}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Domain Coverage Issues}{8}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Correction Magnitude Analysis}{8}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Conclusions}{8}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Transformation Success}{8}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Technical Validation}{9}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Scientific Applications}{9}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Technical Specifications}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Hydrodynamic Model Input Requirements}{9}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Atlantis Model Output Format}{9}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Transformation Capabilities}{9}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Recommendations}{9}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Transformation Algorithm Improvements}{9}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Future Development}{10}{subsection.8.2}%
+\contentsline {section}{Appendix A: File Structure}{11}{section*.4}%
+\contentsline {section}{Appendix B: Technical Details}{11}{section*.5}%

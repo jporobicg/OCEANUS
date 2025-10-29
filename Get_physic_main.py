@@ -46,34 +46,37 @@ print("\n" + "="*50)
 print("TRANSPORT PROCESSING SECTION")
 print("="*50)
 
-test_nc_file = "Test/bass2_simple_2017-11.nc"
+# Define paths
+output_folder = "Test/transport"
 mesh_file = "Test/mesh.nc"
 
-if os.path.exists(test_nc_file):
-    print(f"Found test NetCDF file: {test_nc_file}")
-    data_file = test_nc_file
-    mesh_file = test_nc_file  # Using same file for now
-    
-    # Calculate transport
-    print("Calculating transport...")
-    T, tims = calc_transport(vert, pt1, pt2, dlev, dinc, rimn, data_file, mesh_file, 1)
-    
-    # Write transport file
-    output_file = "Test/Transport_test.nc"
-    print(f"Writing transport file: {output_file}")
+# Process year by year
+for year in range(2017, 2025):  # 2017 to 2024 inclusive
+    # calculate transport for each month
+    for month in range(1, 13):
+        if month < 10:
+            month = f"0{month}"
+        else:
+            month = str(month)
+        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
+        print(f"Processing file: {file_path}")
+        calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year)
+        
+        npz_file = f"{month}{year}_SS_second_Step.npz"
+        if os.path.exists(npz_file):
+            print(f"  -> Skipping {file_path} - NPZ file exists: {npz_file}")
+            continue
+    # load and concatenate NPZ files by year
+    npz_files = glob.glob(f"{year}_*_SS_second_Step.npz")
+    npz_files.sort()
+    T = np.concatenate([np.load(file)['T'] for file in npz_files])
+    tims = np.concatenate([np.load(file)['tims'] for file in npz_files])
+    output_file = f"Test/bass2_simple_{year}.nc"
     write_nc_transport(pt1, pt2, lr, tims, T, fcid, output_file)
-    
-    print(f"\nTransport processing completed!")
+    print(f"Loaded {len(npz_files)} NPZ files for year {year}")
     print(f"Transport array shape: {T.shape}")
     print(f"Time steps: {len(tims)}")
     print(f"Output file: {output_file}")
-    
-else:
-    print(f"Test NetCDF file not found: {test_nc_file}")
-    print("Skipping transport processing - need hydrodynamic data files")
-    print("In a real implementation, you would:")
-    print("1. Have NetCDF files with velocity data (U, V components)")
-    print("2. Have a mesh file with grid coordinates")
-    print("3. Process multiple time files in a loop")
-    print("4. Combine results into final transport file")
+
+
     

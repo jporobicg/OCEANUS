@@ -12,10 +12,11 @@ def cart2pol(x, y):
     return theta, r
 
 
-def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, f):
+def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
     """
     Calculate transport through faces from hydrodynamic data.
     Complete Python version of transport_SS.m
+    Generates intermediate files but does not return values.
 
     Args:
         vert: box vertices
@@ -27,9 +28,6 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, f):
         fnm: hydrodynamic data file (NetCDF)
         fll: mesh file (NetCDF)
         f: file index (for output naming)
-    Returns:
-        T: transport array (nface, ntime, nlayer)
-        tims: time array
     """
     # Open NetCDF files
     nc_data = nc.Dataset(fnm, 'r')
@@ -167,13 +165,13 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, f):
         nc_mesh = nc.Dataset(fll, 'r')
         # Creation of the Final File
     if f < 10:
-        numtx = f"00{f}"
-    elif f < 100:
-        numtx = f"0{f}"
+        numtx = f"00{month}"
+    elif month < 100:
+        numtx = f"0{month}"
     else:
-        numtx = str(f)
+        numtx = str(month)
 
-    file2 = f"{numtx}SS_second_Step.pkl"
+    file2 = f"{numtx}{year}_SS_second_Step.npz"
     if not os.path.exists(file2):
         # Read velocity data for each time step
         for id in range(ntm):
@@ -227,18 +225,17 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, f):
                     value = np.nanmean(tt[lvs, :])
                     T[jj, id, lvs] = vint[jj][lvs] * value
 
-        # Save second step data
-        second_step_data = {'T': T, 'tims': tims}
-        with open(file2, 'wb') as f_pkl:
-            pickle.dump(second_step_data, f_pkl)
+        # Save second step data as NPZ file
+        np.savez_compressed(file2, T=T, tims=tims)
 
     else:
-        with open(file2, 'rb') as f_pkl:
-            second_step_data = pickle.load(f_pkl)
-            T = second_step_data['T']
-            tims = second_step_data['tims']
+        # File already exists, just load to verify
+        data = np.load(file2)
+        T = data['T']
+        tims = data['tims']
+        data.close()
 
     nc_data.close()
     nc_mesh.close()
-
-    return T, tims
+    
+    # Function no longer returns values - only generates files

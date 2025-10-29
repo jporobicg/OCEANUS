@@ -164,14 +164,8 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
         nc_data = nc.Dataset(fnm, 'r')
         nc_mesh = nc.Dataset(fll, 'r')
         # Creation of the Final File
-    if f < 10:
-        numtx = f"00{month}"
-    elif month < 100:
-        numtx = f"0{month}"
-    else:
-        numtx = str(month)
 
-    file2 = f"{numtx}_{year}_SS_second_Step.npz"
+    file2 = f"{month}_{year}_SS_second_Step.npz"
     if not os.path.exists(file2):
         # Read velocity data for each time step
         for id in range(ntm):

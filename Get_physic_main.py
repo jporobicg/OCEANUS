@@ -47,7 +47,7 @@ print("TRANSPORT PROCESSING SECTION")
 print("="*50)
 
 # Define paths
-output_folder = "Test/transport"
+output_folder = "/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS/temporal/"
 mesh_file = "Test/mesh.nc"
 
 # Process year by year

@@ -4,6 +4,7 @@
 import numpy as np
 import os
 import glob
+import sys
 from read_boxes import read_boxes
 from read_faces import read_faces
 from calculate_transport import calc_transport
@@ -47,32 +48,35 @@ print("TRANSPORT PROCESSING SECTION")
 print("="*50)
 
 # Define paths
-output_folder = "/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS/temporal/"
+
 mesh_file = "Test/mesh.nc"
 
-# Process year by year
-for year in range(2017, 2025):  # 2017 to 2024 inclusive
-    # calculate transport for each month
-    for month in range(1, 13):
-        if month < 10:
-            month = f"0{month}"
-        else:
-            month = str(month)
-        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
-        print(f"Processing file: {file_path}")
-        calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year)
-        
-        npz_file = f"{month}_{year}_SS_second_Step.npz"
-        if os.path.exists(npz_file):
-            print(f"  -> Skipping {file_path} - NPZ file exists: {npz_file}")
-            continue
-    # load and concatenate NPZ files by year
-    npz_files = glob.glob(f"*_{year}_SS_second_Step.npz")
-    npz_files.sort()
-    T = np.concatenate([np.load(file)['T'] for file in npz_files])
-    tims = np.concatenate([np.load(file)['tims'] for file in npz_files])
-    output_file = f"Test/bass2_simple_{year}.nc"
-    write_nc_transport(pt1, pt2, lr, tims, T, fcid, output_file)
+# Get single year from CLI
+Year = int(sys.argv[1])
+output_folder = f"/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS/temporal/{Year}/"
+# output folder with the year. create the folder if it doesn't exist
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+# calculate transport for each month for the provided year
+year = Year
+for month in range(1, 13):
+    if month < 10:
+        month = f"0{month}"
+    else:
+        month = str(month)
+    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
+    print(f"Processing file: {file_path}")
+    calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year, output_folder)
+    
+
+# load and concatenate NPZ files by year
+npz_files = glob.glob(f"{output_folder}/*_{year}_SS_second_Step.npz")
+npz_files.sort()
+T = np.concatenate([np.load(file)['T'] for file in npz_files])
+tims = np.concatenate([np.load(file)['tims'] for file in npz_files])
+output_file = f"{output_folder}/bass2_simple_{year}.nc"
+write_nc_transport(pt1, pt2, lr, tims, T, fcid, output_file)
 
 
 

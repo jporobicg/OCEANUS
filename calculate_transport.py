@@ -12,7 +12,7 @@ def cart2pol(x, y):
     return theta, r
 
 
-def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
+def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year, output_folder):
     """
     Calculate transport through faces from hydrodynamic data.
     Complete Python version of transport_SS.m
@@ -52,7 +52,7 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
     T = np.full((nfc, ntm, nlay), np.nan)
 
     # Check if first step file exists
-    file1 = 'SS_first_Step.pkl'
+    file1 = f'{output_folder}/SS_first_Step.pkl'
     if not os.path.exists(file1):
         # Prepare the integration grid for each face
         ngrd = 0
@@ -165,7 +165,7 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
         nc_mesh = nc.Dataset(fll, 'r')
         # Creation of the Final File
 
-    file2 = f"{month}_{year}_SS_second_Step.npz"
+    file2 = f"{output_folder}/{month}_{year}_SS_second_Step.npz"
     if not os.path.exists(file2):
         # Read velocity data for each time step
         for id in range(ntm):
@@ -221,14 +221,6 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
 
         # Save second step data as NPZ file
         np.savez_compressed(file2, T=T, tims=tims)
-
-    else:
-        # File already exists, just load to verify
-        data = np.load(file2)
-        T = data['T']
-        tims = data['tims']
-        data.close()
-
     nc_data.close()
     nc_mesh.close()
     

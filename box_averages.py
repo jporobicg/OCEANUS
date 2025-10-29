@@ -17,7 +17,7 @@ def polyarea(x, y):
     """Calculate polygon area using shoelace formula."""
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
-def box_averages(vert, varn, dlev, fnm, fll, fln):
+def box_averages(vert, varn, dlev, fnm, fll, month, year):
     """
     Calculate average properties for modeling polygons.
     
@@ -27,7 +27,8 @@ def box_averages(vert, varn, dlev, fnm, fll, fln):
         dlev: depth levels array
         fnm: NetCDF data file path
         fll: NetCDF mesh file path
-        fln: file number for output naming
+        month: month number
+        year: year number
     """
     # Open NetCDF files
     nc_data = nc.Dataset(fnm, 'r')
@@ -47,15 +48,15 @@ def box_averages(vert, varn, dlev, fnm, fll, fln):
     nbox = len(vert)
     
     # Format file number for output naming
-    if fln < 10:
-        fln_str = f"00{fln}"
-    elif fln < 100:
-        fln_str = f"0{fln}"
+    if month < 10:
+        fln_str = f"00{month}"
+    elif month < 100:
+        fln_str = f"0{month}"
     else:
-        fln_str = str(fln)
+        fln_str = str(month)
     
     # First step file (grid preparation)
-    file1 = f"{fln_str}{varn}_SS_First_Step.pkl"
+    file1 = f"{fln_str}_{year}_{varn}_SS_First_Step.pkl"
     
     if not os.path.exists(file1):
         print(f"Creating first step file: {file1}")
@@ -140,7 +141,7 @@ def box_averages(vert, varn, dlev, fnm, fll, fln):
     Var_avg = np.full((nbox, ntm, nlay), np.nan)
     
     # Second step file (variable processing)
-    file2 = f"{fln_str}{varn}_SS_Second_step.pkl"
+    file2 = f"{fln_str}_{year}_{varn}_SS_Second_step.npz"
     
     if not os.path.exists(file2):
         print(f"Creating second step file: {file2}")
@@ -200,19 +201,10 @@ def box_averages(vert, varn, dlev, fnm, fll, fln):
                     Var_avg[jj, id, lvs] = np.nanmean(tmp[lvs, :])
         
         # Save second step data
-        second_step_data = {'Var_avg': Var_avg, 'tims': tims}
-        with open(file2, 'wb') as f_pkl:
-            pickle.dump(second_step_data, f_pkl)
-            
-    else:
-        print(f"Loading existing second step file: {file2}")
-        with open(file2, 'rb') as f_pkl:
-            second_step_data = pickle.load(f_pkl)
-        Var_avg = second_step_data['Var_avg']
-        tims = second_step_data['tims']
+        np.savez(file2, Var_avg=Var_avg, tims=tims)            
     
     # Close NetCDF files
     nc_data.close()
     nc_mesh.close()
-    
-    return Var_avg, tims 
+ 
+ 

@@ -62,21 +62,18 @@ for year in range(2017, 2025):  # 2017 to 2024 inclusive
         print(f"Processing file: {file_path}")
         calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year)
         
-        npz_file = f"{month}{year}_SS_second_Step.npz"
+        npz_file = f"{month}_{year}_SS_second_Step.npz"
         if os.path.exists(npz_file):
             print(f"  -> Skipping {file_path} - NPZ file exists: {npz_file}")
             continue
     # load and concatenate NPZ files by year
-    npz_files = glob.glob(f"{year}_*_SS_second_Step.npz")
+    npz_files = glob.glob(f"*_{year}_SS_second_Step.npz")
     npz_files.sort()
     T = np.concatenate([np.load(file)['T'] for file in npz_files])
     tims = np.concatenate([np.load(file)['tims'] for file in npz_files])
     output_file = f"Test/bass2_simple_{year}.nc"
     write_nc_transport(pt1, pt2, lr, tims, T, fcid, output_file)
-    print(f"Loaded {len(npz_files)} NPZ files for year {year}")
-    print(f"Transport array shape: {T.shape}")
-    print(f"Time steps: {len(tims)}")
-    print(f"Output file: {output_file}")
+
 
 
     

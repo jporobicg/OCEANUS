@@ -171,7 +171,7 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year):
     else:
         numtx = str(month)
 
-    file2 = f"{numtx}{year}_SS_second_Step.npz"
+    file2 = f"{numtx}_{year}_SS_second_Step.npz"
     if not os.path.exists(file2):
         # Read velocity data for each time step
         for id in range(ntm):

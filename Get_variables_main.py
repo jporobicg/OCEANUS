@@ -31,56 +31,52 @@ print(f"Number of real faces: {len(nulr)}")
 
 print(f"\nProcessing variables: {varn}")
 
-# Initialize arrays to store all variable data
-all_temp_data = None
-all_salt_data = None
-all_w_data = None
-all_times = None
+
 
 # Process each variable
-for v in range(len(varn)):
-    avname = varn[v]
-    print(f"\nProcessing variable: {avname}")
+for year in range(2017, 2025):
+    # Initialize arrays to store all variable data
+    all_temp_data = None
+    all_salt_data = None
+    all_w_data = None
+    for month in range(1, 13):
+        if month < 10:
+            month = f"0{month}"
+        else:
+            month = str(month)
+        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
+        print(f"Processing file: {file_path}")
     
-    # Call box_averages for this variable
-    box_averages(vert, avname, dlev, data_file, mesh_file, 1)
-    
-    # Look for the processed file
-    pattern = f"*{avname}_SS_Second_step.pkl"
-    t_files = glob.glob(pattern)
-    
-    if len(t_files) > 0:
-        print(f"Found {len(t_files)} processed file(s) for {avname}")
-        
-        # Load the processed data
-        with open(t_files[0], 'rb') as f_pkl:
-            data = pickle.load(f_pkl)
-            Av_final = data['Var_avg']
-            nctime = data['tims']
-        
-        print(f"Loaded data shape: {Av_final.shape}")
-        print(f"Time steps: {len(nctime)}")
-        
-        # Store the data for the combined output
-        if avname == 'temp':
-            all_temp_data = Av_final
-        elif avname == 'salt':
-            all_salt_data = Av_final
-        elif avname == 'w':
-            all_w_data = Av_final
-        
-        # Use the first variable's time array for all
-        if all_times is None:
-            all_times = nctime
+        for v in range(len(varn)):
+            avname = varn[v]
+            print(f"\nProcessing variable: {avname}")
             
-    else:
-        print(f"No processed files found for {avname}")
-
-# Write all variables to a single NetCDF file
-if all_temp_data is not None and all_salt_data is not None and all_w_data is not None:
-    output_file = "Test/Variables_combined.nc"
+            # Call box_averages for this variable
+            box_averages(vert, avname, dlev, file_path, mesh_file, month, year)
+        
+    ## getting the data for the combined output
+    for v in range(len(varn)):
+        avname = varn[v]
+        print(f"\nProcessing variable: {avname}")
+        pattern = f"*_{year}_{avname}_SS_Second_step.npz"
+        t_files = glob.glob(pattern)
+        if len(t_files) > 0:
+            print(f"Found {len(t_files)} processed file(s) for {avname}")
+            Var_avg = np.concatenate([np.load(file)['Var_avg'] for file in t_files])
+            tims = np.concatenate([np.load(file)['tims'] for file in t_files])
+            # Store the data for the combined output
+            if avname == 'temp':
+                all_temp_data = Var_avg
+            elif avname == 'salt':
+                all_salt_data = Var_avg
+            elif avname == 'w':
+                all_w_data = Var_avg
+            all_times = tims
+    ## Writing the output files
+    if all_temp_data is not None and all_salt_data is not None and all_w_data is not None:
+        output_file = f"Test/bass2_simple_{year}.nc"
     print(f"\nWriting all variables to: {output_file}")
     write_all_variables(all_times, bid, all_temp_data, all_salt_data, all_w_data, output_file)
-    print("Variable processing completed!")
+    print(f"Variable processing completed for year {year}!")
 else:
-    print("Error: Not all variables were processed successfully") 
+    print(f"Error: Not all variables were processed successfully for year {year}") 

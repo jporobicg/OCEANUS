@@ -11,6 +11,12 @@
 
 # load python
 module load python
+
+# Ensure we run from the project directory
+cd /home/por07g/Documents/Code_Tools/OCEANUS
+
+# Unbuffered Python stdout/stderr so prints appear immediately
+export PYTHONUNBUFFERED=1
 # Define years array
 YEARS=(2017 2018 2019 2020 2021 2022 2023 2024)
 
@@ -23,8 +29,8 @@ echo "Array Task ID: $SLURM_ARRAY_TASK_ID"
 echo "Node: $SLURM_NODELIST"
 echo "Start time: $(date)"
 
-# Run variables pipeline
-python Get_variables_main.py "$YEAR"
+# Run variables pipeline (unbuffered)
+python -u Get_variables_main.py "$YEAR"
 
 echo "Completed variables processing for year $YEAR"
 echo "End time: $(date)"

@@ -47,6 +47,7 @@ for m in range(1, 13):
 
     for avname in varn:
         npz_file = os.path.join(output_folder, f"{month_str}_{year}_{avname}_SS_Second_step.npz")
+        
         if os.path.exists(npz_file):
             print(f"  -> Skipping {avname} {month_str}-{year} - NPZ exists: {npz_file}")
             continue
@@ -62,6 +63,7 @@ all_times = None
 for avname in varn:
     pattern = os.path.join(output_folder, f"*_{year}_{avname}_SS_Second_step.npz")
     t_files = sorted(glob.glob(pattern))
+    t_files.sort()
     if len(t_files) == 0:
         print(f"No monthly NPZ files found for variable {avname} in {year}")
         continue

@@ -78,9 +78,9 @@ for month in range(1, 13):
 
 # load and concatenate NPZ files by year
 npz_files = glob.glob(f"{output_folder}/*_{year}_SS_second_Step.npz")
-npz_files.sort()
-T = np.concatenate([np.load(file)['T'] for file in npz_files])
-tims = np.concatenate([np.load(file)['tims'] for file in npz_files])
+npz_files.sort()  # relies on zero-padded month prefix for correct order
+T = np.concatenate([np.load(file)['T'] for file in npz_files], axis=1)
+tims = np.concatenate([np.load(file)['tims'] for file in npz_files], axis=0)
 output_file = f"{output_folder}/bass2_simple_{year}.nc"
 write_nc_transport(pt1, pt2, lr, tims, T, fcid, output_file)
 

@@ -153,6 +153,9 @@ Thumbs.db
 *.hdf5
 *.mat
 
+# temporal folder
+temporal/
+
 # Configuration files with sensitive data
 config.ini
 secrets.json

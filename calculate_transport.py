@@ -160,10 +160,10 @@ def calc_transport(vert, pt1, pt2, dlev, dinc, rimn, fnm, fll, month, year, outp
         zc = first_step_data['zc']
         nfc = first_step_data['nfc']
         
-        # Reopen NetCDF files for second step processing
-        nc_data = nc.Dataset(fnm, 'r')
-        nc_mesh = nc.Dataset(fll, 'r')
-        # Creation of the Final File
+    # Reopen NetCDF files for second step processing
+    nc_data = nc.Dataset(fnm, 'r')
+    nc_mesh = nc.Dataset(fll, 'r')
+    # Creation of the Final File
 
     file2 = f"{output_folder}/{month}_{year}_SS_second_Step.npz"
     if not os.path.exists(file2):

@@ -40,19 +40,18 @@ if not os.path.exists(output_folder):
 
 # Monthly processing: compute and save per-variable NPZs
 for m in range(1, 13):
-    month_int = m
-    month_key = f"{m:03d}"
+    month_str = f"{m:02d}"
     file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"
     print(f"Processing file: {file_path}")
 
     for avname in varn:
-        npz_file = os.path.join(output_folder, f"{month_key}_{year}_{avname}_SS_Second_step.npz")
+        npz_file = os.path.join(output_folder, f"{month_str}_{year}_{avname}_SS_Second_step.npz")
         
         if os.path.exists(npz_file):
-            print(f"  -> Skipping {avname} {month_key}-{year} - NPZ exists: {npz_file}")
+            print(f"  -> Skipping {avname} {month_str}-{year} - NPZ exists: {npz_file}")
             continue
         print(f"  -> Processing variable: {avname}")
-        box_averages(vert, avname, dlev, file_path, mesh_file, month_int, year, output_folder)
+        box_averages(vert, avname, dlev, file_path, mesh_file, month_str, year, output_folder)
 
 # Year concatenation per variable, then combined write
 all_temp_data = None

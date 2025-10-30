@@ -17,7 +17,7 @@ def polyarea(x, y):
     """Calculate polygon area using shoelace formula."""
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
-def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
+def box_averages(vert, varn, dlev, fnm, fll, month_str, year, output_folder=None):
     """
     Calculate average properties for modeling polygons.
     
@@ -27,7 +27,7 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
         dlev: depth levels array
         fnm: NetCDF data file path
         fll: NetCDF mesh file path
-        month: month number
+        month_str: two-digit month string (e.g., "01", "12")
         year: year number
     """
     # Open NetCDF files
@@ -53,8 +53,7 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder, exist_ok=True)
 
-    # Three-digit month key (e.g., 001, 012)
-    month_key = f"{int(month):03d}"
+    # month_str is provided by caller (two-digit, e.g., 01, 12)
 
     # First step file (grid preparation) shared across all months/variables/years in this folder
     file1 = os.path.join(output_folder, "SS_First_Step.pkl")
@@ -142,7 +141,7 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
     Var_avg = np.full((nbox, ntm, nlay), np.nan)
     
     # Second step file (variable processing) per variable
-    file2 = os.path.join(output_folder, f"{month_key}_{year}_{varn}_SS_Second_step.npz")
+    file2 = os.path.join(output_folder, f"{month_str}_{year}_{varn}_SS_Second_step.npz")
     
     if not os.path.exists(file2):
         print(f"Creating second step file: {file2}")

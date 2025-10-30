@@ -66,9 +66,15 @@ for month in range(1, 13):
     else:
         month = str(month)
     file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
-    print(f"Processing file: {file_path}")
-    calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year, output_folder)
-    
+    ## check if the processed file exists
+    processed_file = f"{output_folder}/{month}_{year}_SS_second_Step.npz"
+    if os.path.exists(processed_file):
+        print(f"Processed file {processed_file} already exists, skipping")
+        continue
+    else:
+        print(f"Processing file: {file_path}")
+        calc_transport(vert, pt1, pt2, dlev, dinc, rimn, file_path, mesh_file, month, year, output_folder)
+
 
 # load and concatenate NPZ files by year
 npz_files = glob.glob(f"{output_folder}/*_{year}_SS_second_Step.npz")

@@ -146,8 +146,7 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
         
         # Process each time step
         for id in range(ntm):
-            print(f"Processing time step {id+1}/{ntm}")
-            
+              
             # Read variable data for this time step
             # Variables have shape (time, depth, lat, lon)
             varData = nc_data.variables[varn][id, :, :, :]  # (depth, lat, lon)

@@ -53,16 +53,8 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder, exist_ok=True)
 
-    # Format file number for output naming (month is int)
-    if month < 10:
-        fln_str = f"00{month}"
-    elif month < 100:
-        fln_str = f"0{month}"
-    else:
-        fln_str = str(month)
-    
     # First step file (grid preparation)
-    file1 = os.path.join(output_folder, f"{fln_str}_{year}_{varn}_SS_First_Step.pkl")
+    file1 = os.path.join(output_folder, f"{month}_{year}_{varn}_SS_First_Step.pkl")
     
     if not os.path.exists(file1):
         print(f"Creating first step file: {file1}")
@@ -147,7 +139,7 @@ def box_averages(vert, varn, dlev, fnm, fll, month, year, output_folder=None):
     Var_avg = np.full((nbox, ntm, nlay), np.nan)
     
     # Second step file (variable processing)
-    file2 = os.path.join(output_folder, f"{fln_str}_{year}_{varn}_SS_Second_step.npz")
+    file2 = os.path.join(output_folder, f"{month}_{year}_{varn}_SS_Second_step.npz")
     
     if not os.path.exists(file2):
         print(f"Creating second step file: {file2}")

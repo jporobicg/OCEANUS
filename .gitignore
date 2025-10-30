@@ -156,6 +156,11 @@ Thumbs.db
 # temporal folder
 temporal/
 
+# slurm files
+*.out
+*.err
+*.log
+
 # Configuration files with sensitive data
 config.ini
 secrets.json

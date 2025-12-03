@@ -14,7 +14,12 @@ import numpy as np
 import netCDF4 as nc
 import os
 from datetime import datetime
+import sys
 
+Year = int(sys.argv[1])
+year = Year
+input_file = f"/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS/temporal/{year}/bass2_simple_{year}.nc"
+output_file = f"/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS/outputs_final_corrected/mb_transport_{year}_bass2_simple.nc"
 
 def load_transport_data(transport_file):
     """
@@ -433,17 +438,13 @@ def write_corrected_transport(transport_data, output_file):
     print(f"Corrected transport file written: {output_file}")
 
 
-def main():
+def main(input_file, output_file):
     """
     Main function to run mass balance correction.
     """
     print("OCEANUS Mass Balance Correction")
     print("=" * 35)
-    
-    # File paths
-    input_file = "Test/Transport_test.nc"
-    output_file = "Test/Transport_test_mass_balanced.nc"
-    
+   
     # Check if input file exists
     if not os.path.exists(input_file):
         print(f"Error: Transport file not found: {input_file}")
@@ -490,4 +491,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(input_file, output_file)

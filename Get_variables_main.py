@@ -41,7 +41,8 @@ if not os.path.exists(output_folder):
 # Monthly processing: compute and save per-variable NPZs
 for m in range(1, 13):
     month_str = f"{m:02d}"
-    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"
+    
+    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"
     print(f"Processing file: {file_path}")
 
     for avname in varn:

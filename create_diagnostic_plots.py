@@ -102,45 +102,49 @@ def create_grid_comparison():
     ax1.set_title('Original BASS-2 Structured Grid', fontsize=14, fontweight='bold')
     ax1.gridlines(draw_labels=True, alpha=0.5)
     
-    # Plot 2: Unstructured polygons with boundary highlighting
+    # Plot 2: Unstructured polygons
     im2 = ax2.pcolormesh(lon, lat, temp, cmap='RdYlBu_r', 
                         transform=ccrs.PlateCarree(), shading='auto', alpha=0.3)
     ax2.add_feature(cfeature.COASTLINE, linewidth=0.5)
     ax2.add_feature(cfeature.BORDERS, linewidth=0.3)
     
-    # Add all polygons
+    # Add all polygons with stronger lines
     for i in range(boxes[0]):
         if len(boxes[5][i]) > 0:
             polygon = patches.Polygon(boxes[5][i], closed=True, 
-                                    linewidth=0.5, edgecolor='gray', 
-                                    facecolor='none', alpha=0.7)
+                                    linewidth=1.2, edgecolor='gray', 
+                                    facecolor='none', alpha=0.8)
             ax2.add_patch(polygon)
     
-    # Highlight boundary polygons (boxes with faces connected to fewer boxes)
-    boundary_boxes = []
-    for i in range(boxes[0]):
-        if len(boxes[6][i]) < 4:  # Assuming boundary boxes have fewer connections
-            boundary_boxes.append(i)
-    
-    for i in boundary_boxes:
-        if len(boxes[5][i]) > 0:
-            polygon = patches.Polygon(boxes[5][i], closed=True, 
-                                    linewidth=2, edgecolor='red', 
-                                    facecolor='red', alpha=0.3)
-            ax2.add_patch(polygon)
-    
-    ax2.set_title('Atlantis Unstructured Polygons\n(Red = Boundary Boxes)', 
+    ax2.set_title('Atlantis Unstructured Polygons', 
                  fontsize=14, fontweight='bold')
     ax2.gridlines(draw_labels=True, alpha=0.5)
     
-    # Add colorbar
-    cbar = plt.colorbar(im1, ax=[ax1, ax2], orientation='horizontal', 
-                       pad=0.05, shrink=0.8)
-    cbar.set_label('Temperature (°C)', fontsize=12)
+    # Calculate extent from both hydrodynamic data and Atlantis polygons
+    # Get bounds from hydrodynamic data
+    h_lon_min, h_lon_max = lon.min(), lon.max()
+    h_lat_min, h_lat_max = lat.min(), lat.max()
     
-    # Set extent
-    lon_min, lon_max = lon.min(), lon.max()
-    lat_min, lat_max = lat.min(), lat.max()
+    # Get bounds from all Atlantis polygon vertices
+    a_lon_min, a_lon_max = np.inf, -np.inf
+    a_lat_min, a_lat_max = np.inf, -np.inf
+    
+    for i in range(boxes[0]):
+        if len(boxes[5][i]) > 0:
+            vert_lons = boxes[5][i][:, 0]
+            vert_lats = boxes[5][i][:, 1]
+            a_lon_min = min(a_lon_min, vert_lons.min())
+            a_lon_max = max(a_lon_max, vert_lons.max())
+            a_lat_min = min(a_lat_min, vert_lats.min())
+            a_lat_max = max(a_lat_max, vert_lats.max())
+    
+    # Use the union of both bounds
+    lon_min = min(h_lon_min, a_lon_min)
+    lon_max = max(h_lon_max, a_lon_max)
+    lat_min = min(h_lat_min, a_lat_min)
+    lat_max = max(h_lat_max, a_lat_max)
+    
+    # Add padding
     lon_pad = (lon_max - lon_min) * 0.05
     lat_pad = (lat_max - lat_min) * 0.05
     
@@ -149,7 +153,18 @@ def create_grid_comparison():
     ax2.set_extent([lon_min - lon_pad, lon_max + lon_pad, 
                     lat_min - lat_pad, lat_max + lat_pad], ccrs.PlateCarree())
     
+    # Add colorbar at the bottom of the figure using fig.colorbar()
     plt.tight_layout()
+    # Make room for colorbar at bottom
+    fig.subplots_adjust(bottom=0.10)
+    # Add colorbar at bottom (close to plots)
+    cbar = fig.colorbar(im1, ax=[ax1, ax2], orientation='horizontal', 
+                       location='bottom', pad=0.1, shrink=0.8)
+    cbar.set_label('Temperature (°C)', fontsize=12, fontweight='bold')
+
+
+
+    
     plt.savefig('NESP-Atlantis-Pilot/figures/grid_comparison.png', 
                 dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()

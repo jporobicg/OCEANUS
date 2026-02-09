@@ -18,7 +18,7 @@ cd /home/por07g/Documents/Code_Tools/OCEANUS
 # Unbuffered Python stdout/stderr so prints appear immediately
 export PYTHONUNBUFFERED=1
 # Define years array
-YEARS=(2017 2018 2019 2020 2021)
+YEARS=(2017 2018 2019 2020 2021 2022 2023)
 
 # Select year from array index
 YEAR=${YEARS[$SLURM_ARRAY_TASK_ID]}

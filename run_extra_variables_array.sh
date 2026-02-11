@@ -29,8 +29,8 @@ echo "Array Task ID: $SLURM_ARRAY_TASK_ID"
 echo "Node: $SLURM_NODELIST"
 echo "Start time: $(date)"
 
-# Run variables pipeline (unbuffered)
-python -u Get_variables_main.py "$YEAR"
+# Run variables pipeline (unbuffered) with --extra flag
+python -u Get_variables_main.py "$YEAR" --extra
 
 echo "Completed variables processing for year $YEAR"
 echo "End time: $(date)"

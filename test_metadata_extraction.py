@@ -56,7 +56,7 @@ EXTRA_VARS = ['DetR_N', 'DetR_N_sed', 'DOR_N', 'DOR_N_sed', 'NH4', 'NO3',
               'PAR', 'PAR_z', 'PhyL_N', 'PhyS_N', 'porosity', 'ZooL_N', 'ZooS_N']
 
 # Test file
-test_file = "/home/por07g/Documents/Projects/NESP_ParksAustralia/Hydro/bass2_simple_2017-11.nc"
+test_file = "/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_test_2017-01.nc"
 
 print("="*70)
 print("Testing Metadata Extraction")

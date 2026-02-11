@@ -1,8 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=oceanus_vars
 #SBATCH --account=OD-234462
-#SBATCH --output=oceanus_vars_%A_%a.out
-#SBATCH --error=oceanus_vars_%A_%a.err
 #SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G

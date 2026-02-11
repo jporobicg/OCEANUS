@@ -119,7 +119,7 @@ for m in range(1, 13):
     # Use different file paths for standard vs extra variables
     if extra_variables:
         # Extra variables are in BASS2_BGC dataset
-        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_{year}-{month_str}.nc"
+        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_test_{year}-{month_str}.nc"
     else:
         # Standard variables are in BASS2_ocean dataset
         file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"

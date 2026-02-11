@@ -142,7 +142,7 @@ all_times = None
 
 # Get metadata from first available NetCDF file (use first month as reference)
 if extra_variables:
-    first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_{year}-01.nc"
+    first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_test_{year}-01.nc"
 else:
     first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-01.nc"
 

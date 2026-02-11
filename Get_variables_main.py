@@ -116,7 +116,14 @@ if not os.path.exists(output_folder):
 for m in range(1, 13):
     month_str = f"{m:02d}"
     
-    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"
+    # Use different file paths for standard vs extra variables
+    if extra_variables:
+        # Extra variables are in BASS2_BGC dataset
+        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_{year}-{month_str}.nc"
+    else:
+        # Standard variables are in BASS2_ocean dataset
+        file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month_str}.nc"
+    
     print(f"Processing file: {file_path}")
 
     for avname in varn:
@@ -134,7 +141,10 @@ variables_info = []
 all_times = None
 
 # Get metadata from first available NetCDF file (use first month as reference)
-first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-01.nc"
+if extra_variables:
+    first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_BGC/extracted_bass2_bgc_{year}-01.nc"
+else:
+    first_month_file = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-01.nc"
 
 for avname in varn:
     pattern = os.path.join(output_folder, f"*_{year}_{avname}_SS_Second_step.npz")

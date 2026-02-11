@@ -11,7 +11,15 @@
 module load python
 
 # Ensure we run from the project directory
-cd /home/por07g/Documents/Code_Tools/OCEANUS
+# Try compute node path first, fallback to local path
+if [ -d "/datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS" ]; then
+    cd /datasets/work/oa-alantis/work/NESP_hydro/New_version/OCEANUS
+elif [ -d "/home/por07g/Documents/Code_Tools/OCEANUS" ]; then
+    cd /home/por07g/Documents/Code_Tools/OCEANUS
+else
+    echo "Error: OCEANUS directory not found"
+    exit 1
+fi
 
 # Unbuffered Python stdout/stderr so prints appear immediately
 export PYTHONUNBUFFERED=1

@@ -65,41 +65,67 @@ def box_averages(vert, varn, dlev, fnm, fll, month_str, year, output_folder=None
     has_depth = False
     var_depth_size = 1
     depth_dim_idx = None
+    depth_dim_name = None
     
-    # Common depth dimension names
-    depth_dim_names = ['k', 'depth', 'z', 'level', 'zc']
-    
+    # Check for depth dimensions - prioritize k_sed, then k, then other depth names
     for i, dim_name in enumerate(var_dims):
-        if dim_name in depth_dim_names or 'depth' in dim_name.lower() or 'level' in dim_name.lower():
+        if dim_name == 'k_sed':
             has_depth = True
             depth_dim_idx = i
+            depth_dim_name = 'k_sed'
             var_depth_size = var_shape[i]
             break
+        elif dim_name == 'k':
+            has_depth = True
+            depth_dim_idx = i
+            depth_dim_name = 'k'
+            var_depth_size = var_shape[i]
+            # Don't break - continue to check for k_sed first
+        elif dim_name in ['depth', 'z', 'level', 'zc'] or 'depth' in dim_name.lower() or 'level' in dim_name.lower():
+            if not has_depth:  # Only set if we haven't found k or k_sed
+                has_depth = True
+                depth_dim_idx = i
+                depth_dim_name = dim_name
+                var_depth_size = var_shape[i]
     
     # If variable has depth, try to get its depth coordinate
+    # Note: k_sed variables will be summed over, so they become 2D and use surface depth
     var_zc = zc  # Default to using zc from file
     if has_depth and depth_dim_idx is not None:
-        # Try to find depth coordinate variable that matches variable depth dimension
-        depth_coord_name = None
-        for coord_name in ['zc', 'depth', 'z', 'level']:
-            if coord_name in nc_data.variables:
-                coord_data = nc_data.variables[coord_name][:]
-                # Check if this coordinate matches the variable's depth dimension
-                if len(coord_data) == var_depth_size:
-                    var_zc = coord_data
-                    depth_coord_name = coord_name
-                    break
-        
-        # If no matching depth coordinate found, use subset of zc or create one
-        if depth_coord_name is None:
-            if len(zc) >= var_depth_size:
-                # Use first var_depth_size levels from zc
-                var_zc = zc[:var_depth_size]
-                print(f"Info: Using first {var_depth_size} levels from zc for variable {varn}")
+        # For k_sed dimension, we will sum over it later, so set to surface depth
+        if depth_dim_name == 'k_sed':
+            var_zc = np.array([0.0])  # Will be summed to 2D, assigned to surface
+            print(f"Info: Variable {varn} has k_sed dimension - will be summed over sediment layers")
+        elif depth_dim_name == 'k':
+            # For k dimension, use zc coordinate
+            if 'zc' in nc_data.variables:
+                zc_data = nc_data.variables['zc'][:]
+                if len(zc_data) == var_depth_size:
+                    var_zc = zc_data
+                else:
+                    var_zc = zc_data[:var_depth_size] if len(zc_data) >= var_depth_size else zc_data
+                    print(f"Info: Using zc coordinate for variable {varn} (k dimension, {var_depth_size} levels)")
             else:
-                # Variable has more depth levels than zc - use zc and pad if needed
                 var_zc = zc
-                print(f"Warning: Variable {varn} has {var_depth_size} depth levels but zc has only {len(zc)}")
+        else:
+            # For other depth dimensions, try to find matching coordinate
+            depth_coord_name = None
+            for coord_name in ['zc', 'depth', 'z', 'level']:
+                if coord_name in nc_data.variables:
+                    coord_data = nc_data.variables[coord_name][:]
+                    if len(coord_data) == var_depth_size:
+                        var_zc = coord_data
+                        depth_coord_name = coord_name
+                        break
+            
+            # If no matching depth coordinate found, use subset of zc
+            if depth_coord_name is None:
+                if len(zc) >= var_depth_size:
+                    var_zc = zc[:var_depth_size]
+                    print(f"Info: Using first {var_depth_size} levels from zc for variable {varn}")
+                else:
+                    var_zc = zc
+                    print(f"Warning: Variable {varn} has {var_depth_size} depth levels but zc has only {len(zc)}")
     
     # Ensure output folder
     if output_folder is None:
@@ -210,31 +236,48 @@ def box_averages(vert, varn, dlev, fnm, fll, month_str, year, output_folder=None
             
             if has_depth and depth_dim_idx is not None:
                 # 3D variable: need to extract and rearrange to (depth, lat, lon)
-                # Get all dimensions for this time step
-                if len(var_full_shape) == 4:  # (time, depth, lat, lon) or (time, lat, lon, depth)
-                    if depth_dim_idx == 1:  # depth is second dimension: (time, depth, lat, lon)
-                        varData = var_full[id, :, :, :]  # (depth, lat, lon)
-                    elif depth_dim_idx == 3:  # depth is last: (time, lat, lon, depth)
-                        varData = var_full[id, :, :, :].transpose(2, 0, 1)  # Rearrange to (depth, lat, lon)
+                # Special handling for k_sed: sum over sediment layers to reduce to 2D
+                if depth_dim_name == 'k_sed':
+                    # For k_sed variables: (time, k_sed, j, i) -> sum over k_sed -> (time, j, i)
+                    if len(var_full_shape) == 4 and depth_dim_idx == 1:
+                        # Read as (k_sed, j, i) and sum over k_sed dimension
+                        varData_sed = var_full[id, :, :, :]  # (k_sed, j, i)
+                        varData_2d = np.nansum(varData_sed, axis=0)  # Sum over k_sed -> (j, i)
+                        # Expand to 3D with single depth level (surface)
+                        varData = varData_2d[np.newaxis, :, :]  # (1, j, i)
+                        var_zc = np.array([0.0])  # Surface level
+                        print(f"Info: Variable {varn} (k_sed) summed over sediment layers, assigned to surface layer")
                     else:
-                        # Try to read and figure out dimensions
-                        varData = var_full[id, :, :, :]  # Default assumption
-                        # Check if we need to transpose
-                        if varData.shape[0] != var_depth_size:
-                            varData = varData.transpose(2, 0, 1)  # Try transposing
-                elif len(var_full_shape) == 3:  # (time, lat, lon) - no depth, but has_depth was True
-                    # This shouldn't happen, but handle it
-                    varData_2d = var_full[id, :, :]  # (lat, lon)
-                    varData = varData_2d[np.newaxis, :, :]  # (1, lat, lon)
-                    var_zc = np.array([0])  # Surface level
+                        raise ValueError(f"Unexpected shape for k_sed variable {varn}: {var_full_shape}, depth_idx={depth_dim_idx}")
                 else:
-                    raise ValueError(f"Unexpected variable shape for {varn}: {var_full_shape}")
+                    # Regular 3D variable with k or other depth dimension
+                    if len(var_full_shape) == 4:  # (time, depth, lat, lon) or (time, lat, lon, depth)
+                        if depth_dim_idx == 1:  # depth is second dimension: (time, depth, lat, lon)
+                            varData = var_full[id, :, :, :]  # (depth, lat, lon)
+                        elif depth_dim_idx == 3:  # depth is last: (time, lat, lon, depth)
+                            varData = var_full[id, :, :, :].transpose(2, 0, 1)  # Rearrange to (depth, lat, lon)
+                        else:
+                            # Try to read and figure out dimensions
+                            varData = var_full[id, :, :, :]  # Default assumption
+                            # Check if we need to transpose
+                            if varData.shape[0] != var_depth_size:
+                                varData = varData.transpose(2, 0, 1)  # Try transposing
+                    elif len(var_full_shape) == 3:  # (time, lat, lon) - no depth, but has_depth was True
+                        # This shouldn't happen, but handle it
+                        varData_2d = var_full[id, :, :]  # (lat, lon)
+                        varData = varData_2d[np.newaxis, :, :]  # (1, lat, lon)
+                        var_zc = np.array([0])  # Surface level
+                    else:
+                        raise ValueError(f"Unexpected variable shape for {varn}: {var_full_shape}")
             else:
-                # 2D variable: (time, lat, lon) - expand to have depth dimension
+                # 2D variable: (time, lat, lon) - assign to surface layer only
                 if len(var_full_shape) == 3:
                     varData_2d = var_full[id, :, :]  # (lat, lon)
+                    # Expand to 3D with single depth level (surface)
                     varData = varData_2d[np.newaxis, :, :]  # (1, lat, lon)
-                    var_zc = np.array([0])  # Surface level
+                    # Use surface depth (0 or first zc level)
+                    var_zc = np.array([0.0])  # Surface level
+                    print(f"Info: 2D variable {varn} will be assigned to surface layer only")
                 else:
                     raise ValueError(f"Unexpected variable shape for {varn}: {var_full_shape}")
             

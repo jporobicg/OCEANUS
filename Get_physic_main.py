@@ -65,7 +65,7 @@ for month in range(1, 13):
         month = f"0{month}"
     else:
         month = str(month)
-    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
+    file_path = f"/datasets/work/nesp-gda-owf-ra/work/data/covariate_data/processed/BASS2_ocean/2017-2024_historical_v2/bass2_simple_{year}-{month}.nc"
     ## check if the processed file exists
     processed_file = f"{output_folder}/{month}_{year}_SS_second_Step.npz"
     if os.path.exists(processed_file):

@@ -4,7 +4,7 @@
 #SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
-#SBATCH --array=6-6
+#SBATCH --array=7-7
 
 
 # load python
@@ -24,7 +24,7 @@ fi
 # Unbuffered Python stdout/stderr so prints appear immediately
 export PYTHONUNBUFFERED=1
 # Define years array
-YEARS=(2017 2018 2019 2020 2021 2022 2023)
+YEARS=(2017 2018 2019 2020 2021 2022 2023 2024)
 
 # Select year from array index
 YEAR=${YEARS[$SLURM_ARRAY_TASK_ID]}
